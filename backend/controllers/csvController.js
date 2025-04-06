@@ -9,15 +9,33 @@ const handleError = (req, res, err) => {
 
 // Process CSV and return data
 exports.processCsv = async (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({message: 'No file uploaded or file is not a CSV'});
-    }
-
     const results = [];
+
+    const validateData = new Transform({
+        objectMode: true,
+        transform(chunk, encoding, callback) {
+            // Example validation - ensure required fields exist
+            // if (!chunk.name || !chunk.email) {
+            //     errorCount++;
+            //     return callback();
+            // }
+            //
+            // // Clean and transform data if needed
+            // const cleanedData = {
+            //     name: chunk.name.trim(),
+            //     email: chunk.email.toLowerCase().trim(),
+            //     // Add other fields as needed
+            // };
+
+            // results.push(cleanedData);
+            results.push(chunk);
+            callback();
+        }
+    });
 
     const readable = fs.createReadStream(req.file.path)
         .pipe(csvParser())
-        .on('data', (data) => results.push(data))
+        .pipe(validateData)
         .on('end', () => {
             // Log upload information
             console.log(`CSV processing completed at 2025-04-06 00:21:44 by wilmer2000`);
@@ -45,6 +63,7 @@ exports.processCsv = async (req, res) => {
             }
         })
         .on('error', (err) => handleError(req, res, err));
+
     try {
         await readable.pipe(res);
     } catch (error) {
@@ -55,10 +74,6 @@ exports.processCsv = async (req, res) => {
 
 // Import CSV data into database
 exports.importCsv = async (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({message: 'No file uploaded or file is not a CSV'});
-    }
-
     const results = [];
     let errorCount = 0;
 
