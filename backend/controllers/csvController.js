@@ -59,10 +59,10 @@ exports.processCsv = async (req, res) => {
 
         // Extract table name from filename (remove extension and sanitize)
         const originalFilename = path.parse(req.file.originalname).name;
-        const tableName = sanitizeIdentifier(originalFilename);
+        const tableName = camelToSnake(sanitizeIdentifier(originalFilename));
 
 
-        const fileNameIsValid = NAME_FILES_DATA_ALLOWED.includes(tableName);
+        const fileNameIsValid = NAME_FILES_DATA_ALLOWED.map(camelToSnake).includes(tableName);
         if (!fileNameIsValid) {
             return res.status(400).json({
                 success: false,
