@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-const dbValidationService = require('../services/dbValidationService');
-const { pool } = require('../database/db');
+import dbValidationService from '../services/dbValidationService';
+import pool from '../database/db';
 
 /**
  * Run validation manually from command line
@@ -28,4 +28,4 @@ async function main() {
 }
 
 // Run the script
-main().then();
+main();

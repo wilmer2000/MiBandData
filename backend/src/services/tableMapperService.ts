@@ -184,4 +184,4 @@ class TableMapperService {
   }
 }
 
-module.exports = new TableMapperService();
+export default new TableMapperService();

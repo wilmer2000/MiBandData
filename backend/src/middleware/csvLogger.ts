@@ -8,4 +8,4 @@ const csvLogger = (req, res, next) => {
   next();
 };
 
-module.exports = csvLogger;
+export default csvLogger;

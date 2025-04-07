@@ -1,6 +1,6 @@
-const multer = require('multer');
-const storage = require('./storage.ts');
-const fileFilter = require('./fileFilter.ts');
+import multer from 'multer';
+import storage from './storage.ts';
+import fileFilter from './fileFilter.ts';
 
 const upload = multer({
   storage: storage,
@@ -8,4 +8,4 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB file size limit
 });
 
-module.exports = upload;
+export default upload;

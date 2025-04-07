@@ -2,6 +2,10 @@ import path from 'node:path';
 import fs from 'node:fs';
 import pool from '../database/db';
 import { NAME_FILES_DATA_ALLOWED } from '../constants/constant';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /**
  * Health app table validation service
@@ -19,7 +23,7 @@ class DbValidationService {
    */
   async validateTables() {
     try {
-      console.log(`🔍 Validating health app tables at 2025-04-07 01:24:18`);
+      console.log(`🔍 Validating health app tables`);
       console.log(`👤 Current user: wilmer2000`);
 
       // Query to check if tables exist

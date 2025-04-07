@@ -54,7 +54,7 @@ async function startServer() {
     // Start Express server
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
-      console.log(`⏱️  Current time: 2025-04-07 01:24:18 (UTC)`);
+      console.log(`⏱️ Current time: 2025-04-07 01:24:18 (UTC)`);
       console.log(`👤 User: wilmer2000`);
     });
   } catch (error) {
