@@ -19,4 +19,54 @@ pool.query('SELECT NOW()', (err, res) => {
     }
 });
 
+// Check if the 'user' table exists, if not, create it
+const checkAndCreateUserTable = async () => {
+    const userTableExistsQuery = `
+        SELECT EXISTS (SELECT
+                       FROM information_schema.tables
+                       WHERE table_schema = 'public'
+                         AND table_name = 'user_member_profile');
+    `;
+    const result = await pool.query(userTableExistsQuery);
+    const userTableExists = result.rows[0].exists;
+
+    if (!userTableExists) {
+        try {
+            const createUserTableQuery = `
+                CREATE TABLE "user_member_profile"
+                (
+                    id           SERIAL PRIMARY KEY,
+                    username     TEXT NOT NULL,
+                    password     TEXT NOT NULL,
+                    email        TEXT UNIQUE,
+                    name         TEXT,
+                    sex          TEXT,
+                    birth        DATE,
+                    height       NUMERIC,
+                    weight       NUMERIC,
+                    relation     TEXT,
+                    uid          TEXT,
+                    region       TEXT,
+                    special_mark TEXT,
+                    icon         TEXT
+                );
+            `;
+
+            await pool.query(createUserTableQuery);
+
+            const userAdminQuery = `
+                INSERT INTO "user_member_profile" (username, password)
+                VALUES ('admin', 'admin');
+            `
+            await pool.query(userAdminQuery);
+
+            console.log('Created new table: user');
+        } catch (error) {
+            console.error(error);
+        }
+    }
+};
+
+checkAndCreateUserTable().then();
+
 module.exports = {pool};
