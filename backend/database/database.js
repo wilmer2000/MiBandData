@@ -21,12 +21,10 @@ pool.query('SELECT NOW()', (err, res) => {
 
 // Check if the 'user' table exists, if not, create it
 const checkAndCreateUserTable = async () => {
-    const userTableExistsQuery = `
-        SELECT EXISTS (SELECT
-                       FROM information_schema.tables
-                       WHERE table_schema = 'public'
-                         AND table_name = 'user_member_profile');
-    `;
+    // user_member_profile Table
+    const userTableExistsQuery = `SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'user_member_profile');`;
+
+
     const result = await pool.query(userTableExistsQuery);
     const userTableExists = result.rows[0].exists;
 

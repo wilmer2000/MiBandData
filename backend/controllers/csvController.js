@@ -1,16 +1,10 @@
 const fs = require('fs');
 const csvParser = require('csv-parser');
-// const {Transform} = require('stream');
 
 const path = require('path');
-const {pool} = require("../config/database");
+const {pool} = require("../database/database");
 const {NAME_FILES_DATA_ALLOWED} = require("../constants/constant");
 
-// Helper function to handle errors
-// const handleError = (req, res, err) => {
-//     console.error('Error processing CSV:', err);
-//     res.status(500).json({message: 'Error processing CSV file', error: err.message});
-// }
 // Helper function to sanitize identifiers
 const sanitizeIdentifier = (identifier) => {
     // Remove special characters and spaces, convert to lowercase
@@ -60,7 +54,7 @@ exports.processCsv = async (req, res) => {
         const tableName = camelToSnake(sanitizeIdentifier(originalFilename));
 
 
-        const fileNameIsValid = NAME_FILES_DATA_ALLOWED.map(camelToSnake).includes(tableName);
+        const fileNameIsValid = NAME_FILES_DATA_ALLOWED().map(camelToSnake).includes(tableName);
         if (!fileNameIsValid) {
             return res.status(400).json({
                 success: false,
@@ -157,10 +151,7 @@ exports.processCsv = async (req, res) => {
 
             const flatValues = values.flat();
 
-            const insertQuery = `
-                INSERT INTO "${tableName}" (${columnNames})
-                VALUES ${placeholders}
-            `;
+            const insertQuery = `INSERT INTO "${tableName}" (${columnNames}) VALUES ${placeholders}`;
 
             await pool.query(insertQuery, flatValues);
             console.log(`Inserted ${values.length} rows into ${tableName}`);
@@ -182,54 +173,3 @@ exports.processCsv = async (req, res) => {
         res.status(500).json({message: 'Error processing CSV file', error: error.message});
     }
 };
-
-// Import CSV data into database
-// exports.importCsv = async (req, res) => {
-//     const results = [];
-//     let errorCount = 0;
-//
-//     const validateData = new Transform({
-//         objectMode: true,
-//         transform(chunk, encoding, callback) {
-//             // Example validation - ensure required fields exist
-//             // if (!chunk.name || !chunk.email) {
-//             //     errorCount++;
-//             //     return callback();
-//             // }
-//             //
-//             // // Clean and transform data if needed
-//             // const cleanedData = {
-//             //     name: chunk.name.trim(),
-//             //     email: chunk.email.toLowerCase().trim(),
-//             //     // Add other fields as needed
-//             // };
-//
-//             // results.push(cleanedData);
-//             results.push(chunk);
-//             callback();
-//         }
-//     });
-//
-//     const readable = fs.createReadStream(req.file.path, {encoding: 'utf8'})
-//         .pipe(csvParser())
-//         .pipe(validateData)
-//         .on('end', () => {
-//             // In a real app, you would save results to database here
-//             console.log(`CSV file successfully processed`);
-//             res.status(200).json({
-//                 message: 'CSV file successfully imported',
-//                 totalRows: results.length + errorCount,
-//                 successfulRows: results.length,
-//                 errorRows: errorCount,
-//                 timestamp: new Date().toISOString()
-//             });
-//         })
-//         .on('error', (err) => handleError(req, res, err));
-//
-//     try {
-//         await readable.pipe(res);
-//     } catch (error) {
-//         console.error('Error importing CSV:', error);
-//         res.status(500).json({message: 'Error importing CSV file', error: error.message});
-//     }
-// };
