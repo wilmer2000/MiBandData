@@ -3,6 +3,7 @@ import csvParser from 'csv-parser';
 import { pipeline, Transform } from 'stream';
 import tableMapper from './tableMapperService';
 import pool from '../database/db';
+import { sanitizeIdentifier } from '../utils/utils';
 
 /**
  * Service to process CSV files and insert into database tables
@@ -16,11 +17,13 @@ class CsvProcessingService {
    */
   async processFile(file, username) {
     const startTime = new Date();
-    console.log(`🔄 Processing file: ${file.originalname} at 2025-04-07 02:17:31 by wilmer2000`);
+    const tableNameSanitized = sanitizeIdentifier(file.originalname);
+
+    console.log(`🔄 Processing file: ${file.originalname} - table: ${tableNameSanitized}`);
 
     try {
       // Determine target table from filename
-      const tableName = tableMapper.getTableNameFromFilename(file.originalname);
+      const tableName = tableMapper.getTableNameFromFilename(tableNameSanitized);
 
       if (!tableName) {
         throw new Error(`No matching table found for file: ${file.originalname}`);
